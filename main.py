@@ -4,24 +4,30 @@ import re
 
 def print_all_links(text):
     domain = "oslomet"  # TEMPORARY
-    regex = "(?:href=\")((?:(?:https?:\/\/(?:www.)?)" + domain + ".\w+)?(?:\/[a-zæøåA-ZÆØÅ0-9?]+)*(?:\/)*)(?:\")"
+    regex = "(?:href=\")((?:(?:https?:\/\/(?:www.)?)" + domain + ".\w+)?(?:\/[a-zæøåA-ZÆØÅ0-9?]+)+(?:\/)*)(?:\")"
     links = re.findall(regex, text)
     print(links)
-    add_base_domain(links)
+    format_links(links)
 
 
-def add_base_domain(links):
+def format_links(links):
     user_link = "https://www.oslomet.no"  # TEMPORARY
+    domain = "oslomet"  # TEMPORARY
     link_list = []
     for link in links:
-        regex = "https?:\/\/www."
+        regex = "https?:\/\/www." + domain + ".\w+"
         n = re.findall(regex, link)
         if len(n) == 0:
             link_list.append(user_link + link)
-        else:
-            link_list.append(link)
 
     print(link_list)
+
+    # Remove duplicates
+    link_list = list(dict.fromkeys(link_list))
+    print(link_list)
+
+    # Optional remove \en\ ?
+
 
 if __name__ == '__main__':
     # download page
