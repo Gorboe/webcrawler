@@ -1,11 +1,29 @@
 import requests
+import re
+
+
+def print_all_links(text):
+    regex = "(?:href=\")((?:(?:https?:\/\/(?:www.)?)oslomet.\w+)?(?:\/[a-zæøåA-ZÆØÅ0-9?]+)*(?:\/)*)(?:\")"
+    links = re.findall(regex, text)
+    print(links)
+
 
 if __name__ == '__main__':
-    response = requests.get("http://infocare.com")
-    print(response.content)
-    file = open("test.html", "a")
+    # download page
+    response = requests.get("http://oslomet.no")
+    file = open("test.html", "w")
     file.write(response.content.decode("utf-8"))
     file.close()
+
+    # find links on site
+    file = open("test.html", "r")
+    lines = file.read()
+    file.close()
+
+    print_all_links(lines)
+
+# step 1 find all links and put in a list. Make sure only subpages.
+# step 2 url, depth and user defined regex. As inputs.
 
 # Create a python project that is able to download websites and capture sensitive data on the
 # site. The program has to accept the following parameters:
