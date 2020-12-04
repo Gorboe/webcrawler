@@ -3,14 +3,29 @@ import re
 
 
 def print_all_links(text):
-    regex = "(?:href=\")((?:(?:https?:\/\/(?:www.)?)oslomet.\w+)?(?:\/[a-zæøåA-ZÆØÅ0-9?]+)*(?:\/)*)(?:\")"
+    domain = "oslomet"  # TEMPORARY
+    regex = "(?:href=\")((?:(?:https?:\/\/(?:www.)?)" + domain + ".\w+)?(?:\/[a-zæøåA-ZÆØÅ0-9?]+)*(?:\/)*)(?:\")"
     links = re.findall(regex, text)
     print(links)
+    add_base_domain(links)
 
+
+def add_base_domain(links):
+    user_link = "https://www.oslomet.no"  # TEMPORARY
+    link_list = []
+    for link in links:
+        regex = "https?:\/\/www."
+        n = re.findall(regex, link)
+        if len(n) == 0:
+            link_list.append(user_link + link)
+        else:
+            link_list.append(link)
+
+    print(link_list)
 
 if __name__ == '__main__':
     # download page
-    response = requests.get("http://oslomet.no")
+    response = requests.get("https://oslomet.no")
     file = open("test.html", "w")
     file.write(response.content.decode("utf-8"))
     file.close()
