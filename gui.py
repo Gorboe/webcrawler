@@ -1,4 +1,5 @@
 import tkinter
+from crawl import Crawl
 
 
 class GUI:
@@ -35,5 +36,8 @@ class GUI:
 
     def start_crawl(self):
         # Add validation for the inputs
-        s = self.website_url_input
-        print("hello " + s.get())
+
+        # Get base domain
+
+        # Start the crawl
+        Crawl(self.website_url_input.get(), self.crawl_depth_input.get(), self.user_defined_regex_input.get())
