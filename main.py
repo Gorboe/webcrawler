@@ -1,5 +1,6 @@
 import requests
 import re
+import os
 
 
 def print_all_links(text):
@@ -27,9 +28,19 @@ def format_links(links):
     print(link_list)
 
     # Optional remove \en\ ?
+    updated_link_list = []
+    for link in link_list:
+        regex = "https?:\/\/www." + domain + ".\w+\/en\/"
+        n = re.findall(regex, link)
+        if len(n) == 0:
+            updated_link_list.append(link)
+    print(updated_link_list)
 
 
 if __name__ == '__main__':
+    # Make dir
+    # os.mkdir("oslomet")
+
     # download page
     response = requests.get("https://oslomet.no")
     file = open("test.html", "w")
@@ -43,8 +54,20 @@ if __name__ == '__main__':
 
     print_all_links(lines)
 
-# step 1 find all links and put in a list. Make sure only subpages.
-# step 2 url, depth and user defined regex. As inputs.
+# step 1 user inputs, link, depth
+# step 2 extract the domain name, and make a folder
+# step 3 download page and find all links and put in a list. Make sure only subpages.
+# step 4 start at first link and repeat step 1,2,3 making sure no duplicate links.
+#
+# User inputs
+# for ...
+# current_path = ""
+# create folder oslomet and add to current_path
+# download page and find links.
+# first link ".../research"
+# current_path = "oslomet"
+# create folder research under oslomet and add to current_path (oslomet/research)
+# download page and find links...
 
 # Create a python project that is able to download websites and capture sensitive data on the
 # site. The program has to accept the following parameters:
