@@ -40,3 +40,36 @@ def format_links(links, base_domain, base_url):
             updated_link_list.append(link)
 
     return updated_link_list
+
+
+# Method to find emails.
+def find_emails(base_domain, url):
+    # Create file if it does not exist
+    email_file = open(base_domain + "/emails.txt", "a")
+    email_file.close()
+
+    # Get page text, and find all emails on the page
+    file = open(base_domain + get_path(url) + "/page.html", "r")
+    lines = file.read()
+    file.close()
+    regex = "\w+@(?:\w+).?\w+\.\w+"
+    emails = re.findall(regex, lines)
+
+    # Add
+    email_file = open(base_domain + "/emails.txt", "a")
+    for email in emails:
+        email_file.write(email + "\n")
+    email_file.close()
+
+    # Make sure only unique emails.
+    email_file = open(base_domain + "/emails.txt", "r")
+    existing_emails_list = email_file.readlines()
+    existing_emails_list = list(dict.fromkeys(existing_emails_list))
+    email_file.close()
+    email_file = open(base_domain + "/emails.txt", "w")
+    email_file.write("")
+    email_file.close()
+    email_file = open(base_domain + "/emails.txt", "a")
+    for email in existing_emails_list:
+        email_file.write(email)
+    email_file.close()

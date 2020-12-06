@@ -28,32 +28,7 @@ class Crawl:
 
             # do whatever i want to page, find headers, words ect..
             # Find emails
-            email_file = open(self.base_domain[0] + "/emails.txt", "a")  # Create file, if not exist
-            email_file.close()
-            # Get page text, and find all emails
-            file = open(self.base_domain[0] + ressources.get_path(url) + "/page.html", "r")
-            lines = file.read()
-            file.close()
-            regex = "\w+@(?:\w+).?\w+\.\w+"
-            emails = re.findall(regex, lines)
-
-            email_file = open(self.base_domain[0] + "/emails.txt", "a")
-            for email in emails:
-                email_file.write(email + "\n")
-            email_file.close()
-
-            # Make sure only unique emails.
-            email_file = open(self.base_domain[0] + "/emails.txt", "r")
-            existing_emails_list = email_file.readlines()
-            existing_emails_list = list(dict.fromkeys(existing_emails_list))
-            email_file.close()
-            email_file = open(self.base_domain[0] + "/emails.txt", "w")
-            email_file.write("")
-            email_file.close()
-            email_file = open(self.base_domain[0] + "/emails.txt", "a")
-            for email in existing_emails_list:
-                email_file.write(email)
-            email_file.close()
+            ressources.find_emails(self.base_domain[0], url)
 
             # Find Phone numbers
             phone_number_file = open(self.base_domain[0] + "/phonenumbers.txt", "w")
