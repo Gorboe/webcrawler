@@ -54,22 +54,19 @@ def find_emails(base_domain, url):
     file.close()
     regex = "\w+@(?:\w+).?\w+\.\w+"
     emails = re.findall(regex, lines)
+    emails = list(dict.fromkeys(emails))  # Removes duplicates in array
 
-    # Add
-    email_file = open(base_domain + "/emails.txt", "a")
-    for email in emails:
-        email_file.write(email + "\n")
-    email_file.close()
-
-    # Make sure only unique emails.
+    # Add new emails but don't add duplicates. (The same mail can be present on different pages)
     email_file = open(base_domain + "/emails.txt", "r")
     existing_emails_list = email_file.readlines()
-    existing_emails_list = list(dict.fromkeys(existing_emails_list))
     email_file.close()
-    email_file = open(base_domain + "/emails.txt", "w")
-    email_file.write("")
-    email_file.close()
-    email_file = open(base_domain + "/emails.txt", "a")
-    for email in existing_emails_list:
-        email_file.write(email)
+
+    email_file = open(base_domain + "/emails.txt", "a")  # Opens with append so i can add more emails
+    for email in emails:
+        is_unique_email = True
+        for existing_email in existing_emails_list:  # Checks existing mails vs new mails
+            if existing_email[:-1] == email:  # The [:-1] is because when i get them from file they have \n
+                is_unique_email = False
+        if is_unique_email:
+            email_file.write(email + "\n")
     email_file.close()
