@@ -131,28 +131,25 @@ def find_comments_in_source(base_domain, url):
     # Open file to put comments in
     source_comments_file = open(base_domain + "/sourcecomments.txt", "w")
 
-    # css (find better name, this comment type can be used in script as well)
     regex_css_comments = "(?:\/\*)((?:.)+)(?:\*\/)"
+    regex_script_comments = "(?<!['https?:])(?:(?:\/\/)(.+))"  # negative lookbehind to avoid urls, non-capturing //
+    regex_html_comments = ""
+
     css_comments = re.findall(regex_css_comments, text)
+    script_comments = re.findall(regex_script_comments, text)
+    comments = css_comments + script_comments
 
     # Reopen the text, but this time collect line by line and figure out line number where we got the comments from
     file = open(base_domain + get_path(url) + "/page.html", "r")
     lines = file.readlines()
     file.close()
 
-    # pretty_table.padding_width = 1
-    for css_comment in css_comments:
+    for comment in comments:
         line_number = 0
-        print("Check: " + css_comment)
         for line in lines:
             line_number += 1
-            if line.find(css_comment) >= 0:
-                print("finds")
-                # string_builder = "File path: " + base_domain + get_path(url) + "\tLine: " + str(line_number) + "\tComment: " + css_comment + "\n"
-                pretty_table.add_row([base_domain + get_path(url), line_number, css_comment])
-                source_comments_file.write(str(pretty_table))
+            if line.find(comment) >= 0:
+                pretty_table.add_row([base_domain + get_path(url), line_number, comment])
 
-    regex_html_comments = ""
-    regex_script_comments = ""
-
+    source_comments_file.write(str(pretty_table))
     source_comments_file.close()
