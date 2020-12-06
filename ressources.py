@@ -2,6 +2,10 @@ import urllib.parse
 import re
 import prettytable
 
+
+pretty_table = prettytable.PrettyTable(["File path", "Line Number", "Comment"])
+
+
 def get_base_domain(url):
     regex = "(?:(?:https?:\/\/)?www.)([A-ZÆØÅa-zæøå0-9]+)"
     return re.findall(regex, url)
@@ -125,7 +129,7 @@ def find_comments_in_source(base_domain, url):
     file.close()
 
     # Open file to put comments in
-    source_comments_file = open(base_domain + "/sourcecomments.txt", "a")
+    source_comments_file = open(base_domain + "/sourcecomments.txt", "w")
 
     # css (find better name, this comment type can be used in script as well)
     regex_css_comments = "(?:\/\*)((?:.)+)(?:\*\/)"
@@ -136,7 +140,6 @@ def find_comments_in_source(base_domain, url):
     lines = file.readlines()
     file.close()
 
-    pretty_table = prettytable.PrettyTable(["File path", "Line Number", "Comment"])
     # pretty_table.padding_width = 1
     for css_comment in css_comments:
         line_number = 0
