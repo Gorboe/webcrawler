@@ -9,12 +9,24 @@ def get_base_domain(url):
 
 # This method extracts the entire path of a given url.
 def get_path(url):
-    return urllib.parse.urlparse(url).path
+    path = urllib.parse.urlparse(url)
+    if path.query == "":
+        return path.path
+    else:
+        return path.path + "?" + path.query
+
+
+def get_folder_friendly_path(url):
+    # Some pages on oslomet has the structure /path?p=2, but you can create folders with ?
+    # So to create folders i need to replace ? in the urls with something else.
+    path = urllib.parse.urlparse(url)
+    print("d: " + path.query)
+    return path.path + "/" + path.query[-0:]
 
 
 # This method gets all the links on a page
 def get_all_links(page, base_domain, base_url):
-    regex = "(?:href=\")((?:(?:https?:\/\/(?:www.)?)" + base_domain + ".\w+)?(?:\/[a-zæøåA-ZÆØÅ0-9?]+)+(?:\/)*)(?:\")"
+    regex = "(?:href=\")((?:(?:https?:\/\/(?:www.)?)" + base_domain + ".\w+)?(?:\/[a-zæøåA-ZÆØÅ0-9?=]+)+(?:\/)*)(?:\")"
     links = re.findall(regex, page)
     return format_links(links, base_domain, base_url)
 
@@ -54,7 +66,7 @@ def find_emails(base_domain, url):
     file.close()
     regex = "\w+@(?:\w+).?\w+\.\w+"
     emails = re.findall(regex, lines)
-    emails = list(dict.fromkeys(emails))  # Removes duplicates in array
+    emails = list(dict.fromkeys(emails))  # Removes duplicates in list
 
     # Add new emails but don't add duplicates. (The same mail can be present on different pages)
     email_file = open(base_domain + "/emails.txt", "r")
@@ -65,8 +77,38 @@ def find_emails(base_domain, url):
     for email in emails:
         is_unique_email = True
         for existing_email in existing_emails_list:  # Checks existing mails vs new mails
-            if existing_email[:-1] == email:  # The [:-1] is because when i get them from file they have \n
+            if existing_email[:-1] == email:  # The [:-1] is because when i get mails from file they have \n, this removes that for the comparison.
                 is_unique_email = False
         if is_unique_email:
             email_file.write(email + "\n")
     email_file.close()
+
+
+# Method to find all phone numbers
+def find_phone_numbers(base_domain, url):
+    # Create file if it does not exist
+    phone_number_file = open(base_domain + "/phonenumbers.txt", "a")
+    phone_number_file.close()
+
+    # Get page text, and find all phone numbers on the page
+    file = open(base_domain + get_path(url) + "/page.html", "r")
+    lines = file.read()
+    file.close()
+    regex = "(?<![\w\d])((?:[+0-9]{3} )?[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2})(?![\w\d])"
+    phone_numbers = re.findall(regex, lines)
+    phone_numbers = list(dict.fromkeys(phone_numbers))  # Removes duplicates in list
+
+    # Add new phone numbers but don't add duplicates. (The same phone number can be present on different pages)
+    phone_number_file = open(base_domain + "/phonenumbers.txt", "r")
+    existing_phone_number_list = phone_number_file.readlines()
+    phone_number_file.close()
+
+    phone_number_file = open(base_domain + "/phonenumbers.txt", "a")  # Opens with append so i can add more emails
+    for phone_number in phone_numbers:
+        is_unique_phone_number = True
+        for existing_phone_number in existing_phone_number_list:  # Checks existing mails vs new mails
+            if existing_phone_number[:-1] == phone_number:  # The [:-1] is because when i get phone number from file they have \n, this removes that for the comparison.
+                is_unique_phone_number = False
+        if is_unique_phone_number:
+            phone_number_file.write(phone_number + "\n")
+    phone_number_file.close()

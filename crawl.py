@@ -18,7 +18,7 @@ class Crawl:
         # create folder for this page to store the page itself, and data
         try:
             print("Making dir: " + self.base_domain[0] + ressources.get_path(url))
-            os.mkdir(self.base_domain[0] + ressources.get_path(url))
+            os.mkdir(self.base_domain[0] + ressources.get_folder_friendly_path(url))
 
             # download page
             response = requests.get(url)
@@ -31,9 +31,7 @@ class Crawl:
             ressources.find_emails(self.base_domain[0], url)
 
             # Find Phone numbers
-            phone_number_file = open(self.base_domain[0] + "/phonenumbers.txt", "w")
-
-            phone_number_file.close()
+            ressources.find_phone_numbers(self.base_domain[0], url)
 
             # check the depth, if 0 return. We don't wanna crawl deeper.
             if depth == 0:
@@ -44,7 +42,7 @@ class Crawl:
             lines = file.read()
             file.close()
             links = ressources.get_all_links(lines, self.base_domain[0], self.base_url)
-
+            print(links)
             # for url in url_list:
             for link in links:
                 print("next crawl: " + link + "\n")
