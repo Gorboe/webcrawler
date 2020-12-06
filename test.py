@@ -3,15 +3,24 @@ import re
 import urllib.parse
 import ressources
 
-file = open("oslomet/om/ansatteoversikt" + "/page.html", "r")
-lines = file.read()
-file.close()
-links = ressources.get_all_links(lines, "oslomet", "https://oslomet.no")
-print(links)
+f = open("oslomet/page.html", "r")
+text = f.read()
+f.close()
 
+regex_css_comments = "(?:\/\*)((?:.)+)(?:\*\/)"
+regex_html_comments = ""
+regex_script_comments = ""
 
-# (?<![\w\d])([0-9]{8})(?![\w\d])
-# (?<![\w\d])([0-9 ]{11})(?![\w\d])
-# (?<![\w\d])([0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2})(?![\w\d])
-# (?<![\w\d])((?:[+0-9]{3} )[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2})(?![\w\d])
-# (?<![\w\d])((?:[+0-9]{3} )?[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2})(?![\w\d])
+comments = re.findall(regex_css_comments, text)
+print(comments)
+
+f = open("oslomet/page.html", "r")
+lines = f.readlines()
+f.close()
+for comment in comments:
+    l_nr = 0
+    print("Check: " + comment)
+    for line in lines:
+        l_nr += 1
+        if line.find(comment) >= 0:
+            print(l_nr)

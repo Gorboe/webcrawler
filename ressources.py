@@ -1,6 +1,6 @@
 import urllib.parse
 import re
-
+import prettytable
 
 def get_base_domain(url):
     regex = "(?:(?:https?:\/\/)?www.)([A-ZÆØÅa-zæøå0-9]+)"
@@ -54,7 +54,7 @@ def format_links(links, base_domain, base_url):
     return updated_link_list
 
 
-# Method to find emails.
+# Method to find emails. !!!!!!BUG MED SUBDOMAIN EMAILS!!!!
 def find_emails(base_domain, url):
     # Create file if it does not exist
     email_file = open(base_domain + "/emails.txt", "a")
@@ -84,7 +84,7 @@ def find_emails(base_domain, url):
     email_file.close()
 
 
-# Method to find all phone numbers
+# Method to find all phone numbers !!!!!FIX FOR TELEFONFORMAT xxx xx xxx OGSÅ!!!!
 def find_phone_numbers(base_domain, url):
     # Create file if it does not exist
     phone_number_file = open(base_domain + "/phonenumbers.txt", "a")
@@ -112,3 +112,44 @@ def find_phone_numbers(base_domain, url):
         if is_unique_phone_number:
             phone_number_file.write(phone_number + "\n")
     phone_number_file.close()
+
+
+def find_comments_in_source(base_domain, url):
+    # Create file if it does not exist
+    source_comments_file = open(base_domain + "/sourcecomments.txt", "a")
+    source_comments_file.close()
+
+    # Get page text, and find all source comments on the page (Script, html, css)
+    file = open(base_domain + get_path(url) + "/page.html", "r")
+    text = file.read()  # File text
+    file.close()
+
+    # Open file to put comments in
+    source_comments_file = open(base_domain + "/sourcecomments.txt", "a")
+
+    # css (find better name, this comment type can be used in script as well)
+    regex_css_comments = "(?:\/\*)((?:.)+)(?:\*\/)"
+    css_comments = re.findall(regex_css_comments, text)
+
+    # Reopen the text, but this time collect line by line and figure out line number where we got the comments from
+    file = open(base_domain + get_path(url) + "/page.html", "r")
+    lines = file.readlines()
+    file.close()
+
+    pretty_table = prettytable.PrettyTable(["File path", "Line Number", "Comment"])
+    # pretty_table.padding_width = 1
+    for css_comment in css_comments:
+        line_number = 0
+        print("Check: " + css_comment)
+        for line in lines:
+            line_number += 1
+            if line.find(css_comment) >= 0:
+                print("finds")
+                # string_builder = "File path: " + base_domain + get_path(url) + "\tLine: " + str(line_number) + "\tComment: " + css_comment + "\n"
+                pretty_table.add_row([base_domain + get_path(url), line_number, css_comment])
+                source_comments_file.write(str(pretty_table))
+
+    regex_html_comments = ""
+    regex_script_comments = ""
+
+    source_comments_file.close()
