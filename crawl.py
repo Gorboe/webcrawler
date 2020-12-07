@@ -7,7 +7,7 @@ import re
 class Crawl:
     def __init__(self, base_url, depth, user_regex):
         self.base_url = base_url
-        # self.user_regex = user_regex
+        self.user_regex = user_regex
         self.base_domain = ressources.get_base_domain(base_url)[0]
         self.crawl(base_url, depth)  # Starting point of the crawl
 
@@ -17,7 +17,7 @@ class Crawl:
 
         # create folder for this page to store the page itself, and data
         try:
-            if int(depth) <= -1:
+            if int(depth) <= -1:  # If i start with depth 0, it will recurse with depth -1 and continue for ever
                 return
 
             print("Making dir: " + self.base_domain + ressources.get_path(url))
@@ -37,6 +37,9 @@ class Crawl:
 
             # Find source comments
             ressources.find_comments_in_source(self.base_domain, url)
+
+            # Find special data from user provided regex
+            ressources.find_special_data(self.base_domain, url, self.user_regex)
 
             # check the depth, if 0 return. We don't wanna crawl deeper.
             if int(depth) == 0:

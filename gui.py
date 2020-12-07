@@ -41,3 +41,4 @@ class GUI:
 
         # Start the crawl
         Crawl(self.website_url_input.get(), self.crawl_depth_input.get(), self.user_defined_regex_input.get())
+        print("Crawl finished")

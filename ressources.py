@@ -155,3 +155,34 @@ def find_comments_in_source(base_domain, url):
 
     source_comments_file.write(str(pretty_table))
     source_comments_file.close()
+
+
+def find_special_data(base_domain, url, regex):
+    # Create file if it does not exist
+    special_data_file = open(base_domain + "/specialdata.txt", "a")
+    special_data_file.close()
+
+    if regex == "":
+        return
+
+    # Get page text
+    file = open(base_domain + get_path(url) + "/page.html", "r")
+    text = file.read()  # File text
+    file.close()
+
+    special_data = re.findall(regex, text)
+
+    # Get existing data, to avoid dupes
+    special_data_file = open(base_domain + "/specialdata.txt", "r")
+    existing_special_data = special_data_file.readlines()
+    special_data_file.close()
+
+    special_data_file = open(base_domain + "/specialdata.txt", "a")
+    for data in special_data:
+        is_unique_data = True
+        for existing_data in existing_special_data:
+            if existing_data[:-1] == data:
+                is_unique_data = False
+        if is_unique_data:
+            special_data_file.write(data + "\n")
+    special_data_file.close()
