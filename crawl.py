@@ -25,7 +25,7 @@ class Crawl:
 
             # download page
             response = requests.get(url)
-            file = open(self.base_domain + ressources.get_path(url) + "/page.html", "w", encoding="utf-8")
+            file = open(self.base_domain + ressources.get_path(url) + "/page.html", "w")
             file.write(response.content.decode("utf-8"))
             file.close()
 
@@ -52,7 +52,7 @@ class Crawl:
             for link in links:
                 print("next crawl: " + link + "\n")
                 self.crawl(link, int(depth)-1)
-        except IndexError as e:
+        except:
             print("Dupe, did not create folder")
 
 # User inputs

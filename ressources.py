@@ -66,7 +66,7 @@ def find_emails(base_domain, url):
     file = open(base_domain + get_path(url) + "/page.html", "r")
     lines = file.read()
     file.close()
-    regex = "\w+@(?:\w+).?\w+\.\w+"
+    regex = "[\w\d.-]+@(?:\w+).?\w+\.\w+"
     emails = re.findall(regex, lines)
     emails = list(dict.fromkeys(emails))  # Removes duplicates in list
 
