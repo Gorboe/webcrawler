@@ -41,6 +41,9 @@ class Crawl:
             # Find special data from user provided regex
             ressources.find_special_data(self.base_domain, url, self.user_regex)
 
+            # Count page words
+            ressources.count_words(self.base_domain, url)
+
             # check the depth, if 0 return. We don't wanna crawl deeper.
             if int(depth) == 0:
                 return

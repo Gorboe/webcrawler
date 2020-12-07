@@ -1,10 +1,11 @@
 import urllib.parse
 import re
 import prettytable
-
+import operator
 
 pretty_table = prettytable.PrettyTable(["File path", "Line Number", "Comment"])
-
+dictionary_pretty_table = prettytable.PrettyTable(["Word", "Count"])
+word_dictionary = dict()
 
 def get_base_domain(url):
     regex = "(?:(?:https?:\/\/)?www.)([A-ZÆØÅa-zæøå0-9]+)"
@@ -186,3 +187,33 @@ def find_special_data(base_domain, url, regex):
         if is_unique_data:
             special_data_file.write(data + "\n")
     special_data_file.close()
+
+
+def count_words(base_domain, url):
+    # Create dictionary file
+    dictionary_file = open(base_domain + "/dictionary.txt", "a")
+    dictionary_file.close()
+
+    # Read file and get page
+    file = open(base_domain + get_path(url) + "/page.html", "r")
+    text = file.read()  # File text
+    file.close()
+
+    # Get the words from file
+    regex = "(?<![0-9\/\*\+()])([A-ZÆØÅa-zæøå\-]+)(?![0-9\/\*\+()])"
+    words = re.findall(regex, text)
+    # Count all words and add to dictionary
+    for word in words:
+        if word in word_dictionary:
+            word_dictionary[word] += 1
+        else:
+            word_dictionary[word] = 1
+
+    # Now all the words are counted, add them to pretty table one by one
+    for word in word_dictionary:
+        dictionary_pretty_table.add_row([word, word_dictionary[word]])
+
+    # write to file
+    dictionary_file = open(base_domain + "/dictionary.txt", "w")
+    dictionary_file.write(str(dictionary_pretty_table.get_string(reversesort=True, sortby="Count")))
+    dictionary_file.close()
