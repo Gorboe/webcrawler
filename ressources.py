@@ -97,7 +97,10 @@ def find_phone_numbers(base_domain, url):
     lines = file.read()
     file.close()
     regex = "(?<![\w\d])((?:[+0-9]{3} )?[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2})(?![\w\d])"
+    regex_3_2_3_format = "(?<![\w\d])((?:[+0-9]{3} )?[0-9]{3} [0-9]{2} [0-9]{3})(?![\w\d])"
     phone_numbers = re.findall(regex, lines)
+    phone_numbers_3_2_3_format = re.findall(regex_3_2_3_format, lines)
+    phone_numbers = phone_numbers + phone_numbers_3_2_3_format
     phone_numbers = list(dict.fromkeys(phone_numbers))  # Removes duplicates in list
 
     # Add new phone numbers but don't add duplicates. (The same phone number can be present on different pages)
