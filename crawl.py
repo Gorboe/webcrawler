@@ -17,12 +17,15 @@ class Crawl:
 
         # create folder for this page to store the page itself, and data
         try:
+            if int(depth) <= -1:
+                return
+
             print("Making dir: " + self.base_domain + ressources.get_path(url))
             os.mkdir(self.base_domain + ressources.get_path(url))
 
             # download page
             response = requests.get(url)
-            file = open(self.base_domain + ressources.get_path(url) + "/page.html", "w")
+            file = open(self.base_domain + ressources.get_path(url) + "/page.html", "w", encoding="utf-8")
             file.write(response.content.decode("utf-8"))
             file.close()
 
@@ -36,7 +39,7 @@ class Crawl:
             ressources.find_comments_in_source(self.base_domain, url)
 
             # check the depth, if 0 return. We don't wanna crawl deeper.
-            if depth == 0:
+            if int(depth) == 0:
                 return
             print("test")
             # Find links on the site
@@ -49,9 +52,8 @@ class Crawl:
             for link in links:
                 print("next crawl: " + link + "\n")
                 self.crawl(link, int(depth)-1)
-        except:
+        except IndexError as e:
             print("Dupe, did not create folder")
-
 
 # User inputs
 # for ...

@@ -130,12 +130,13 @@ def find_comments_in_source(base_domain, url):
     source_comments_file = open(base_domain + "/sourcecomments.txt", "w")
 
     regex_css_comments = "(?:\/\*)((?:.)+)(?:\*\/)"
-    regex_script_comments = "(?<!['https?:])(?:(?:\/\/)(.+))"  # negative lookbehind to avoid urls, non-capturing //
-    regex_html_comments = ""
+    regex_script_comments = "(?<!['https?:])(?:(?:\/\/)(.+))"  # negative lookbehind to avoid urls, non-capturing //, check for " in front
+    regex_html_comments = "(?<=\<\!\-\-)[a-zA-Z0-9 \=\?\/\-\+\*\;\!\]\[\<\>]+(?=(-->))"
 
     css_comments = re.findall(regex_css_comments, text)
     script_comments = re.findall(regex_script_comments, text)
-    comments = css_comments + script_comments
+    html_comments = re.findall(regex_html_comments, text)
+    comments = css_comments + script_comments + html_comments
 
     # Reopen the text, but this time collect line by line and figure out line number where we got the comments from
     file = open(base_domain + get_path(url) + "/page.html", "r")
