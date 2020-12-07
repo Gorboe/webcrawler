@@ -18,7 +18,7 @@ class Crawl:
         # create folder for this page to store the page itself, and data
         try:
             print("Making dir: " + self.base_domain + ressources.get_path(url))
-            os.mkdir(self.base_domain + ressources.get_folder_friendly_path(url))
+            os.mkdir(self.base_domain + ressources.get_path(url))
 
             # download page
             response = requests.get(url)
@@ -38,7 +38,7 @@ class Crawl:
             # check the depth, if 0 return. We don't wanna crawl deeper.
             if depth == 0:
                 return
-
+            print("test")
             # Find links on the site
             file = open(self.base_domain + ressources.get_path(url) + "/page.html", "r")
             lines = file.read()

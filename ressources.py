@@ -13,11 +13,7 @@ def get_base_domain(url):
 
 # This method extracts the entire path of a given url.
 def get_path(url):
-    path = urllib.parse.urlparse(url)
-    if path.query == "":
-        return path.path
-    else:
-        return path.path + "?" + path.query
+    return urllib.parse.urlparse(url).path
 
 
 def get_folder_friendly_path(url):
@@ -41,10 +37,12 @@ def get_all_links(page, base_domain, base_url):
 def format_links(links, base_domain, base_url):
     link_list = []
     for link in links:
-        regex = "https?:\/\/www." + base_domain + ".\w+"
+        regex = "https?:\/\/(?:www.)?" + base_domain + ".\w+"
         n = re.findall(regex, link)  # Regex checks for the absolute path
         if len(n) == 0:  # If the link doesnt have absolute path it triggers
             link_list.append(base_url + link)  # Adds the absolute path to the link (base_url)
+        else:
+            link_list.append(link)  # Else just append the link normally
 
     # Optional remove \en\. This is just a translation of the sites, and if i dont remove it i would get 2 versions
     # of all the pages, 1 in norwegian the other in english.
