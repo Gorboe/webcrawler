@@ -131,7 +131,7 @@ def find_comments_in_source(base_domain, url):
 
     regex_css_comments = "(?:\/\*)((?:.)+)(?:\*\/)"
     regex_script_comments = "(?<!['https?:])(?:(?:\/\/)(.+))"  # negative lookbehind to avoid urls, non-capturing //, check for " in front
-    regex_html_comments = "(?<=\<\!\-\-)[a-zA-Z0-9 \=\?\/\-\+\*\;\!\]\[\<\>]+(?=(-->))"
+    regex_html_comments = "(?<=\<\!\-\-)([a-zA-Z0-9 \=\?\/\-\+\*\;\!\]\[\<\>\"\&()]+)(?=(?:-->))"
 
     css_comments = re.findall(regex_css_comments, text)
     script_comments = re.findall(regex_script_comments, text)
