@@ -200,7 +200,7 @@ def count_words(base_domain, url):
     file.close()
 
     # Get the words from file
-    regex = "(?<![0-9\/\*\+()])([A-ZÆØÅa-zæøå\-]+)(?![0-9\/\*\+()])"
+    regex = "\\b([A-ZÆØÅa-zæøå]+)\\b"
     words = re.findall(regex, text)
     # Count all words and add to dictionary
     for word in words:

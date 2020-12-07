@@ -7,6 +7,6 @@ f = open("oslomet/page.html", "r")
 text = f.read()
 f.close()
 
-regex = "(?<![0-9\/\*\+()])([A-ZÆØÅa-zæøå\-]+)(?![0-9\/\*\+()])"
+regex = "\\b([A-ZÆØÅa-zæøå]+)\\b"
 comments = re.findall(regex, text)
 print(comments)
