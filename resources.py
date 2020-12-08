@@ -9,9 +9,7 @@ word_dictionary = dict()
 
 
 def get_base_domain(url):
-    r = urllib.parse.urlparse(url).hostname
-    print(r)
-    return r
+    return urllib.parse.urlparse(url).hostname
 
 
 # This method extracts the entire path of a given url.

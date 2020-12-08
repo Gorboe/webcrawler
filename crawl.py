@@ -24,15 +24,21 @@ class Crawl:
             os.mkdir(self.base_domain + resources.get_path(url))
 
             # download page
-            print("donwload page: " + url)
             response = requests.get(url)
-            print("gets url")
-            file = open(self.base_domain + resources.get_path(url) + "/page.html", "w")
-            file.write(response.content.decode("utf-8"))
+            file = None
+
+            try:
+                file = open(self.base_domain + resources.get_path(url) + "/page.html", "w")
+                file.write(response.content.decode("utf-8"))
+            except:
+                try:
+                    file = open(self.base_domain + resources.get_path(url) + "/page.html", "w", encoding="utf-8")
+                    file.write(response.content.decode("utf-8"))
+                except:
+                    pass
             file.close()
 
             # Find emails
-            print("emails")
             resources.find_emails(self.base_domain, url)
 
             # Find Phone numbers
@@ -50,7 +56,7 @@ class Crawl:
             # check the depth, if 0 return. We don't wanna crawl deeper.
             if int(depth) == 0:
                 return
-            print("test")
+
             # Find links on the site
             file = open(self.base_domain + resources.get_path(url) + "/page.html", "r")
             lines = file.read()
