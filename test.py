@@ -1,12 +1,7 @@
 import os
 import re
 import urllib.parse
-import ressources
+import resources
 
-f = open("oslomet/page.html", "r")
-text = f.read()
-f.close()
+print(resources.get_base_domain("http://www.oslomet.student.no/path3/path3"))
 
-regex = "\\b([A-ZÆØÅa-zæøå]+)\\b"
-comments = re.findall(regex, text)
-print(comments)

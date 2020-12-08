@@ -7,8 +7,9 @@ pretty_table = prettytable.PrettyTable(["File path", "Line Number", "Comment"])
 dictionary_pretty_table = prettytable.PrettyTable(["Word", "Count"])
 word_dictionary = dict()
 
+
 def get_base_domain(url):
-    regex = "(?:(?:https?:\/\/)?www.)([A-ZÆØÅa-zæøå0-9]+)"
+    regex = "(?:(?:https?:\/\/)?www.)([A-ZÆØÅa-zæøå0-9.]+)"
     return re.findall(regex, url)
 
 
@@ -27,7 +28,7 @@ def get_folder_friendly_path(url):
 
 # This method gets all the links on a page
 def get_all_links(page, base_domain, base_url):
-    regex = "(?:href=\")((?:(?:https?:\/\/(?:www.)?)" + base_domain + ".\w+)?(?:\/[a-zæøåA-ZÆØÅ0-9?=]+)+(?:\/)*)(?:\")"
+    regex = "(?:href=\")((?:(?:https?:\/\/(?:www.)?)" + base_domain + ")?(?:\/[a-zæøåA-ZÆØÅ0-9?=]+)+(?:\/)*)(?:\")"
     links = re.findall(regex, page)
     return format_links(links, base_domain, base_url)
 
@@ -44,6 +45,7 @@ def format_links(links, base_domain, base_url):
             link_list.append(base_url + link)  # Adds the absolute path to the link (base_url)
         else:
             link_list.append(link)  # Else just append the link normally
+
 
     # Optional remove \en\. This is just a translation of the sites, and if i dont remove it i would get 2 versions
     # of all the pages, 1 in norwegian the other in english.
@@ -133,9 +135,9 @@ def find_comments_in_source(base_domain, url):
     # Open file to put comments in
     source_comments_file = open(base_domain + "/sourcecomments.txt", "w")
 
-    regex_css_comments = "(?:\/\*)((?:.)+)(?:\*\/)"
+    regex_css_comments = "(?:\/\*)((?:.)+)(?:\*\/)" # /**/
     regex_script_comments = "(?<!['https?:])(?:(?:\/\/)(.+))"  # negative lookbehind to avoid urls, non-capturing //, check for " in front
-    regex_html_comments = "(?<=\<\!\-\-)([a-zA-Z0-9 \=\?\/\-\+\*\;\!\]\[\<\>\"\&()]+)(?=(?:-->))"
+    regex_html_comments = "(?<=\<\!\-\-)([a-zA-Z0-9 \=\?\/\-\+\*\;\!\]\[\<\>\"\&()]+)(?=(?:-->))" # <!-- dsda -->
 
     css_comments = re.findall(regex_css_comments, text)
     script_comments = re.findall(regex_script_comments, text)
