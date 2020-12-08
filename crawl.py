@@ -8,7 +8,7 @@ class Crawl:
     def __init__(self, base_url, depth, user_regex):
         self.base_url = base_url
         self.user_regex = user_regex
-        self.base_domain = resources.get_base_domain(base_url)[0]
+        self.base_domain = resources.get_base_domain(base_url)
         self.crawl(base_url, depth)  # Starting point of the crawl
 
     # Recursive crawl function.
@@ -24,12 +24,15 @@ class Crawl:
             os.mkdir(self.base_domain + resources.get_path(url))
 
             # download page
+            print("donwload page: " + url)
             response = requests.get(url)
+            print("gets url")
             file = open(self.base_domain + resources.get_path(url) + "/page.html", "w")
             file.write(response.content.decode("utf-8"))
             file.close()
 
             # Find emails
+            print("emails")
             resources.find_emails(self.base_domain, url)
 
             # Find Phone numbers

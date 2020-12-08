@@ -9,8 +9,9 @@ word_dictionary = dict()
 
 
 def get_base_domain(url):
-    regex = "(?:(?:https?:\/\/)?www.)([A-ZÆØÅa-zæøå0-9.]+)"
-    return re.findall(regex, url)
+    r = urllib.parse.urlparse(url).hostname
+    print(r)
+    return r
 
 
 # This method extracts the entire path of a given url.
@@ -46,17 +47,7 @@ def format_links(links, base_domain, base_url):
         else:
             link_list.append(link)  # Else just append the link normally
 
-
-    # Optional remove \en\. This is just a translation of the sites, and if i dont remove it i would get 2 versions
-    # of all the pages, 1 in norwegian the other in english.
-    updated_link_list = []
-    for link in link_list:
-        regex = "https?:\/\/www." + base_domain + ".\w+\/en\/"
-        n = re.findall(regex, link)
-        if len(n) == 0:
-            updated_link_list.append(link)
-
-    return updated_link_list
+    return link_list
 
 
 # Method to find emails. !!!!!!BUG MED SUBDOMAIN EMAILS!!!!

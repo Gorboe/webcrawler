@@ -2,6 +2,7 @@ import os
 import re
 import urllib.parse
 import resources
+import requests
 
-print(resources.get_base_domain("http://www.oslomet.student.no/path3/path3"))
+print(requests.get("https://student.oslomet.no"))
 
