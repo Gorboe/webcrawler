@@ -5,9 +5,16 @@ import resources
 import requests
 import crawl
 
-file = open("www.oslomet.no/om/ansatteoversikt" + "/page.html", "r")
-lines = file.read()
+file = open("www.oslomet.no" + "/page.html", "r")
+text = file.read()
 file.close()
 
-print(resources.get_all_links(lines, "www.oslomet.no", "https://www.oslomet.no"))
+regex = "(?<=<[\w+\-*\"*\?*\ *]>)((?:[\w.,;]+(?: )*(?:\n)*)+)(?=(?:<\/\w+>))"
+lines = re.findall(regex, text)
+print(lines)
 
+# (?<=(<[\w"\/\- =]+>)(\n)?)(?:([\w]+( )?(\n)?)+)(?=(<\/\w+>))
+# (?<=(<[\w"\/\- =]+>)(\n)?)(?:([\w]+( )?(\n)?)+)(?=(<\/\w+>))
+# (?<=(<[\w"\/\- =]+>)(\n)*)(?:([\w.,;]+( )*(\n)*)+)(?=(<\/\w+>))
+
+# (?<=<p>)((?:[\w.,;]+(?: )*(?:\n)*)+)(?=(?:<\/\w+>))
