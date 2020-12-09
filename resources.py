@@ -14,7 +14,12 @@ def get_base_domain(url):
 
 # This method extracts the entire path of a given url.
 def get_path(url):
-    return urllib.parse.urlparse(url).path
+    path = urllib.parse.urlparse(url).path
+    query = urllib.parse.urlparse(url).query
+    if query != "":
+        return path + "/" + query[-0:]
+    else:
+        return path
 
 
 def get_folder_friendly_path(url):
