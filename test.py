@@ -9,7 +9,7 @@ file = open("www.oslomet.no" + "/page.html", "r")
 text = file.read()
 file.close()
 
-regex = "(?<=<[\w+\-*\"*\?*\ *]>)((?:[\w.,;]+(?: )*(?:\n)*)+)(?=(?:<\/\w+>))"
+regex = "oslomet"
 lines = re.findall(regex, text)
 print(lines)
 

@@ -2,7 +2,7 @@ import requests
 import os
 import resources
 import re
-
+import pathlib
 
 class Crawl:
     def __init__(self, base_url, depth, user_regex):
@@ -19,7 +19,9 @@ class Crawl:
         # create folder for this page to store the page itself, and data
         try:
             print("Making dir: " + self.base_domain + resources.get_path(url))
-            os.mkdir(self.base_domain + resources.get_path(url))
+            path = pathlib.Path(self.base_domain + resources.get_path(url))
+            path.mkdir(parents=True, exist_ok=True)  # This also creates parent folders if they are not already made
+            # os.mkdir(self.base_domain + resources.get_path(url))
 
             # download page
             response = requests.get(url)
