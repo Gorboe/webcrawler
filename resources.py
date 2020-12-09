@@ -4,7 +4,6 @@ import prettytable
 import operator
 
 pretty_table = prettytable.PrettyTable(["File path", "Line Number", "Comment"])
-dictionary_pretty_table = prettytable.PrettyTable(["Word", "Count"])
 word_dictionary = dict()
 
 
@@ -20,14 +19,6 @@ def get_path(url):
         return path + "/" + query[-0:]
     else:
         return path
-
-
-def get_folder_friendly_path(url):
-    # Some pages on oslomet has the structure /path?p=2, but you can create folders with ?
-    # So to create folders i need to replace ? in the urls with something else.
-    path = urllib.parse.urlparse(url)
-    print("d: " + path.query)
-    return path.path + "/" + path.query[-0:]
 
 
 # This method gets all the links on a page
@@ -206,6 +197,7 @@ def count_words(base_domain, url):
             word_dictionary[word] = 1
 
     # Now all the words are counted, add them to pretty table one by one
+    dictionary_pretty_table = prettytable.PrettyTable(["Word", "Count"])
     for word in word_dictionary:
         dictionary_pretty_table.add_row([word, word_dictionary[word]])
 
