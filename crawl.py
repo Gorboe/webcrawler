@@ -16,7 +16,7 @@ class Crawl:
     # Recursive crawl function.
     def crawl(self, url, depth):
         try:
-            print("Making dir: " + self.base_domain + resources.get_path(url))
+            print("Making dir: " + self.base_domain + resources.get_path(url) + "  Link depth: " + str(depth))
             path = pathlib.Path(self.base_domain + resources.get_path(url))
             path.mkdir(parents=True, exist_ok=True)  # This also creates parent folders if they are not already made
             # os.mkdir(self.base_domain + resources.get_path(url))
@@ -66,4 +66,4 @@ class Crawl:
             next_url = self.link_queue.popleft()
             self.crawl(next_url[0], next_url[1])
         except:
-            print("Dupe, did not create folder")
+            print()
