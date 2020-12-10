@@ -1,7 +1,7 @@
 import urllib.parse
 import re
 import prettytable
-import operator
+
 
 pretty_table = prettytable.PrettyTable(["File path", "Line Number", "Comment"])
 word_dictionary = dict()
@@ -23,9 +23,58 @@ def get_path(url):
 
 # This method gets all the links on a page
 def get_all_links(page, base_domain, base_url):
-    regex = "(?:href=\")((?:(?:https?:\/\/(?:www.)?)" + base_domain + ")?(?:\/[a-zæøåA-ZÆØÅ0-9?=]+)+(?:\/)*)(?:\")"
+    regex = "(?:href=\")((?:(?:https?:\/\/(?:www.)?)" + base_domain + ")?(?:\/[a-zæøåA-ZÆØÅ0-9?\-=\+%#:_]+)+(?:\/)*)(?:\")"
     links = re.findall(regex, page)
     return format_links(links, base_domain, base_url)
+
+
+def attempt_read(path):
+    # Find links on the site
+    file = None
+    text = None
+    try:
+        file = open(path, "r")
+        text = file.read()
+    except:
+        try:
+            file = open(path, "r", encoding="utf-8")
+            text = file.read()
+        except:
+            pass
+    file.close()
+    return text
+
+
+def attempt_read_lines(path):
+    # Find links on the site
+    file = None
+    lines = None
+    try:
+        file = open(path, "r")
+        lines = file.readlines()
+    except:
+        try:
+            file = open(path, "r", encoding="utf-8")
+            lines = file.readlines()
+        except:
+            pass
+    file.close()
+    return lines
+
+
+def attempt_write(path, text):
+    file = None
+
+    try:
+        file = open(path, "w")
+        file.write(text)
+    except:
+        try:
+            file = open(path, "w", encoding="utf-8")
+            file.write(text)
+        except:
+            pass
+    file.close()
 
 
 # This is a helper method to properly format the links. Main focus is making sure all links are formatted having
@@ -51,9 +100,8 @@ def find_emails(base_domain, url):
     email_file.close()
 
     # Get page text, and find all emails on the page
-    file = open(base_domain + get_path(url) + "/page.html", "r")
-    lines = file.read()
-    file.close()
+    lines = attempt_read(base_domain + get_path(url) + "/page.html")
+
     regex = "[\w\d.-]+@(?:\w+).?\w+\.\w+"
     emails = re.findall(regex, lines)
     emails = list(dict.fromkeys(emails))  # Removes duplicates in list
@@ -81,9 +129,8 @@ def find_phone_numbers(base_domain, url):
     phone_number_file.close()
 
     # Get page text, and find all phone numbers on the page
-    file = open(base_domain + get_path(url) + "/page.html", "r")
-    lines = file.read()
-    file.close()
+    lines = attempt_read(base_domain + get_path(url) + "/page.html")
+
     regex = "(?<![\w\d])((?:[+0-9]{3} )?[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2})(?![\w\d])"
     regex_3_2_3_format = "(?<![\w\d])((?:[+0-9]{3} )?[0-9]{3} [0-9]{2} [0-9]{3})(?![\w\d])"
     phone_numbers = re.findall(regex, lines)
@@ -113,12 +160,7 @@ def find_comments_in_source(base_domain, url):
     source_comments_file.close()
 
     # Get page text, and find all source comments on the page (Script, html, css)
-    file = open(base_domain + get_path(url) + "/page.html", "r")
-    text = file.read()  # File text
-    file.close()
-
-    # Open file to put comments in
-    source_comments_file = open(base_domain + "/sourcecomments.txt", "w")
+    text = attempt_read(base_domain + get_path(url) + "/page.html")
 
     regex_css_comments = "(?:\/\*)((?:.)+)(?:\*\/)" # /**/
     regex_script_comments = "(?<!['https?:])(?:(?:\/\/)(.+))"  # negative lookbehind to avoid urls, non-capturing //, check for " in front
@@ -130,9 +172,7 @@ def find_comments_in_source(base_domain, url):
     comments = css_comments + script_comments + html_comments
 
     # Reopen the text, but this time collect line by line and figure out line number where we got the comments from
-    file = open(base_domain + get_path(url) + "/page.html", "r")
-    lines = file.readlines()
-    file.close()
+    lines = attempt_read_lines(base_domain + get_path(url) + "/page.html")
 
     for comment in comments:
         line_number = 0
@@ -141,8 +181,7 @@ def find_comments_in_source(base_domain, url):
             if line.find(comment) >= 0:
                 pretty_table.add_row([base_domain + get_path(url), line_number, comment])
 
-    source_comments_file.write(str(pretty_table))
-    source_comments_file.close()
+    attempt_write(base_domain + "/sourcecomments.txt", str(pretty_table))
 
 
 def find_special_data(base_domain, url, regex):
@@ -154,16 +193,12 @@ def find_special_data(base_domain, url, regex):
         return
 
     # Get page text
-    file = open(base_domain + get_path(url) + "/page.html", "r")
-    text = file.read()  # File text
-    file.close()
+    text = attempt_read(base_domain + get_path(url) + "/page.html")
 
     special_data = re.findall(regex, text)
 
     # Get existing data, to avoid dupes
-    special_data_file = open(base_domain + "/specialdata.txt", "r")
-    existing_special_data = special_data_file.readlines()
-    special_data_file.close()
+    existing_special_data = attempt_read_lines(base_domain + "/specialdata.txt")
 
     special_data_file = open(base_domain + "/specialdata.txt", "a")
     for data in special_data:
@@ -182,9 +217,7 @@ def count_words(base_domain, url):
     dictionary_file.close()
 
     # Read file and get page
-    file = open(base_domain + get_path(url) + "/page.html", "r")
-    text = file.read()  # File text
-    file.close()
+    text = attempt_read(base_domain + get_path(url) + "/page.html")
 
     # Get the words from file
     regex = "([A-ZÆØÅa-zæøå]+)"

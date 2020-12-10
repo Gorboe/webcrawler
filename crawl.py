@@ -1,11 +1,12 @@
 import requests
-import os
 import resources
-import re
 import pathlib
+import _collections
+
 
 class Crawl:
     def __init__(self, base_url, depth, user_regex):
+        self.link_queue = _collections.deque()
         self.link_dictionary = dict()
         self.base_url = base_url
         self.user_regex = user_regex
@@ -14,9 +15,6 @@ class Crawl:
 
     # Recursive crawl function.
     def crawl(self, url, depth):
-        print("Crawling... Depth: " + str(depth))
-
-        # create folder for this page to store the page itself, and data
         try:
             print("Making dir: " + self.base_domain + resources.get_path(url))
             path = pathlib.Path(self.base_domain + resources.get_path(url))
@@ -25,18 +23,7 @@ class Crawl:
 
             # download page
             response = requests.get(url)
-            file = None
-
-            try:
-                file = open(self.base_domain + resources.get_path(url) + "/page.html", "w")
-                file.write(response.content.decode("utf-8"))
-            except:
-                try:
-                    file = open(self.base_domain + resources.get_path(url) + "/page.html", "w", encoding="utf-8")
-                    file.write(response.content.decode("utf-8"))
-                except:
-                    pass
-            file.close()
+            resources.attempt_write(self.base_domain + resources.get_path(url) + "/page.html", response.content.decode("utf-8"))
 
             # Find emails
             resources.find_emails(self.base_domain, url)
@@ -54,42 +41,29 @@ class Crawl:
             resources.count_words(self.base_domain, url)
 
             # check the depth, if 0 return. We don't wanna crawl deeper.
-            if int(depth) == 0:
-                return
+            if int(depth) > 0:
+                # Find links on the site
+                lines = resources.attempt_read(self.base_domain + resources.get_path(url) + "/page.html")
+                links = resources.get_all_links(lines, self.base_domain, self.base_url)
 
-            # Find links on the site
-            file = open(self.base_domain + resources.get_path(url) + "/page.html", "r")
-            lines = file.read()
-            file.close()
-            links = resources.get_all_links(lines, self.base_domain, self.base_url)
-            print(links)
+                # Remove duplicate links / add new links to dictionary. Add to queue
+                unique_links = []
+                for link in links:
+                    is_unique = True
+                    for entry in self.link_dictionary:
+                        if link == entry:
+                            is_unique = False
+                    if is_unique:
+                        unique_links.append(link)
+                        self.link_dictionary[link] = 1
+                    else:
+                        self.link_dictionary[link] += 1
 
-            # Remove duplicate links / add new links to dictionary
-            unique_links = []
-            for link in links:
-                is_unique = True
-                for entry in self.link_dictionary:
-                    if link == entry:
-                        is_unique = False
-                if is_unique:
-                    unique_links.append(link)
-                    self.link_dictionary[link] = 1
-                else:
-                    self.link_dictionary[link] += 1
+                for link in unique_links:
+                    self.link_queue.append([link, int(depth-1)])
 
-            # for url in unique link list
-            for link in unique_links:
-                print("next crawl: " + link + "\n")
-                self.crawl(link, int(depth)-1)
+            # Pop first from queue
+            next_url = self.link_queue.popleft()
+            self.crawl(next_url[0], next_url[1])
         except:
             print("Dupe, did not create folder")
-
-# User inputs
-# for ...
-# current_path = ""
-# create folder oslomet and add to current_path
-# download page and find links.
-# first link ".../research"
-# current_path = "oslomet"
-# create folder research under oslomet and add to current_path (oslomet/research)
-# download page and find links...
