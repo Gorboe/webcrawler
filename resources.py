@@ -23,11 +23,12 @@ def get_path(url):
 
 # This method gets all the links on a page
 def get_all_links(page, base_domain, base_url):
-    regex = "(?:href=\")((?:(?:https?:\/\/(?:www.)?)" + base_domain + ")?(?:\/[a-zæøåA-ZÆØÅ0-9?\-=\+%#:_]+)+(?:\/)*)(?:\")"
+    regex = "(?:href=\")((?:(?:https?:\/\/)" + base_domain + ")?(?:\/[a-zæøåA-ZÆØÅ0-9?\-=\+%#:_]+)+(?:\/)*)(?:\")"
     links = re.findall(regex, page)
     return format_links(links, base_domain, base_url)
 
 
+# Read files
 def attempt_read(path):
     # Find links on the site
     file = None
@@ -45,6 +46,7 @@ def attempt_read(path):
     return text
 
 
+# Read files by line
 def attempt_read_lines(path):
     # Find links on the site
     file = None
@@ -62,6 +64,7 @@ def attempt_read_lines(path):
     return lines
 
 
+# Write to file
 def attempt_write(path, text):
     file = None
 
@@ -93,7 +96,7 @@ def format_links(links, base_domain, base_url):
     return link_list
 
 
-# Method to find emails. !!!!!!BUG MED SUBDOMAIN EMAILS!!!!
+# Method to find emails
 def find_emails(base_domain, url):
     # Create file if it does not exist
     email_file = open(base_domain + "/emails.txt", "a")
@@ -122,7 +125,7 @@ def find_emails(base_domain, url):
     email_file.close()
 
 
-# Method to find all phone numbers !!!!!FIX FOR TELEFONFORMAT xxx xx xxx OGSÅ!!!!
+# Method to find all phone numbers
 def find_phone_numbers(base_domain, url):
     # Create file if it does not exist
     phone_number_file = open(base_domain + "/phonenumbers.txt", "a")

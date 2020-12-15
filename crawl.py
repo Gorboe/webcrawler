@@ -19,9 +19,8 @@ class Crawl:
             print("Making dir: " + self.base_domain + resources.get_path(url) + "  Link depth: " + str(depth))
             path = pathlib.Path(self.base_domain + resources.get_path(url))
             path.mkdir(parents=True, exist_ok=True)  # This also creates parent folders if they are not already made
-            # os.mkdir(self.base_domain + resources.get_path(url))
 
-            # download page
+            # Download page
             response = requests.get(url)
             resources.attempt_write(self.base_domain + resources.get_path(url) + "/page.html", response.content.decode("utf-8"))
 
@@ -63,7 +62,9 @@ class Crawl:
                     self.link_queue.append([link, int(depth-1)])
 
             # Pop first from queue
-            next_url = self.link_queue.popleft()
-            self.crawl(next_url[0], next_url[1])
+            if self.link_queue:
+                next_url = self.link_queue.popleft()
+                self.crawl(next_url[0], next_url[1])
         except:
-            print()
+            if self.link_queue:
+                self.link_queue.popleft()
